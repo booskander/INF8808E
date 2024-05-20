@@ -1,59 +1,25 @@
-
-# -*- coding: utf-8 -*-
-
-'''
-    File name: app.py
-    Author: Olivia Gélinas
-    Course: INF8808
-    Python Version: 3.8
-
-    This file is the entry point for our dash app.
-'''
-
-
 import dash
-import dash_html_components as html
-import dash_core_components as dcc
+from dash import html, dcc
 from dash.dependencies import Input, Output, State
-
 import pandas as pd
-
 import preprocess
 import bar_chart
-
 from template import create_template
-from modes import MODES
-
+from modes import MODES, MODE_TO_COLUMN
 
 app = dash.Dash(__name__)
 app.title = 'TP2 | INF8808'
 
 
 def prep_data():
-    '''
-        Imports the .csv file and does some preprocessing.
-
-        Returns:
-            A pandas dataframe containing the preprocessed data.
-    '''
     dataframe = pd.read_csv('./assets/data/romeo_and_juliet.csv')
-
     proc_data = preprocess.summarize_lines(dataframe)
     proc_data = preprocess.replace_others(proc_data)
     proc_data = preprocess.clean_names(proc_data)
-
     return proc_data
 
 
 def init_app_layout(figure):
-    '''
-        Generates the HTML layout representing the app.
-
-        Args:
-            figure: The figure to display.
-        Returns:
-            The HTML structure of the app's web page.
-    '''
     return html.Div(className='content', children=[
         html.Header(children=[
             html.H1('Who\'s Speaking?'),
@@ -90,12 +56,12 @@ def init_app_layout(figure):
                         options=[
                             dict(
                                 label=MODES['count'],
-                                value=MODES['count']),
+                                value='count'),
                             dict(
                                 label=MODES['percent'],
-                                value=MODES['percent']),
+                                value='percent'),
                         ],
-                        value=MODES['count']
+                        value='count'
                     )
                 ])
             ])
@@ -109,20 +75,10 @@ def init_app_layout(figure):
     [State('line-chart', 'figure')]
 )
 def radio_updated(mode, figure):
-    '''
-        Updates the application after the radio input is modified.
-
-        Args:
-            mode: The mode selected in the radio input.
-            figure: The figure as it is currently displayed
-        Returns:
-            new_fig: The figure to display after the change of radio input
-            mode: The new mode
-    '''
-    # TODO : Update the figure's data and y axis, as well as the informational
-    # text indicating the mode
-    new_fig = figure
-    return new_fig, ''
+    new_fig = bar_chart.draw(figure, data, mode)
+    new_fig = bar_chart.update_y_axis(new_fig, mode)
+    mode_text = mode.capitalize()
+    return new_fig, mode_text
 
 
 data = prep_data()

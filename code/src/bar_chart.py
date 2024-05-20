@@ -8,6 +8,7 @@ import plotly.io as pio
 
 from hover_template import get_hover_template
 from modes import MODES, MODE_TO_COLUMN
+import pandas as pd
 
 
 def init_figure():
@@ -23,16 +24,23 @@ def init_figure():
 
     # TODO : Update the template to include our new theme and set the title
 
+    combined_template = go.layout.Template(pio.templates['simple_white'])
+    combined_template.update(pio.templates['custom_theme'])
+
     fig.update_layout(
-        template=pio.templates['simple_white'],
-        dragmode=False,
-        barmode='relative'
+        template=combined_template,
+        title={
+            'text': 'Lines per act',
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
+        title_pad=dict(b=10)
     )
 
     return fig
 
 
-def draw(fig, data, mode):
+def draw(fig: go.Figure, data: pd.DataFrame, mode: str):
     '''
         Draws the bar chart.
 
@@ -43,12 +51,32 @@ def draw(fig, data, mode):
         Returns:
             fig: The figure comprising the drawn bar chart
     '''
-    fig = go.Figure(fig)  # conversion back to Graph Object
+    y_col = []
     # TODO : Update the figure's data according to the selected mode
+
+    if mode.lower() == 'count':
+        y_col = data['PlayerLine']
+    else:
+        y_col = data['PlayerPercent']
+
+    players = set(data['Player'])
+
+    for player in players:
+        player_data = data[data['Player'] == player]
+        fig.add_trace(
+            go.Bar(
+                x=player_data['Act'],
+                y=player_data[y_col],
+                name=player,
+            )
+        )
+
+    fig.update_layout(barmode='stack')
+
     return fig
 
 
-def update_y_axis(fig, mode):
+def update_y_axis(fig: go.Figure, mode: str):
     '''
         Updates the y axis to say 'Lines (%)' or 'Lines (Count) depending on
         the current display.
@@ -59,3 +87,10 @@ def update_y_axis(fig, mode):
             The updated figure
     '''
     # TODO : Update the y axis title according to the current mode
+
+    if mode.lower() == 'count':
+        y_title = 'Lines (Count)'
+    elif mode.lower() == 'percent':
+        y_title = 'Lines (%)'
+
+    fig.update_yaxes(title=y_title)
