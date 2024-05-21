@@ -27,16 +27,15 @@ def get_hover_template(name, mode):
     '''
 
     if mode.lower() == 'count':
-        value_template = "<br>%{y} lines"
-    elif mode.lower() == 'percent':
-        value_template = "<br>%{y:.2f}% of lines"
+        hover_template = (
+            "<b><span style='font-family: Grenze Gotisch; font-size: 24px; color: black;'>Act: %{x}</span></b><br>" +
+            f'<b>Player: {name}</b><br>' +
+            "<b>Number of lines:</b> %{y} lines"
+        )
     else:
-        raise ValueError("Mode should be either 'count' or 'percent'")
-
-    template = (
-        f"<span style='font-family: \"Grenze Gotisch\"; font-size: 24px; color: black;'>{name}</span>"
-        f"{value_template}"
-        "<extra></extra>"
-    )
-
-    return template
+        hover_template = (
+            "<b><span style='font-family: Grenze Gotisch; font-size: 24px; color: black;'>Act: %{x}</span></b><br>" +
+            f'<b>Player: {name}</b><br>' +
+            "<b>Percentage of lines:</b> %{y:.2f}%"
+        )
+    return hover_template

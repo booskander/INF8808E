@@ -17,6 +17,7 @@ THEME = {
     'label_background_color': '#ffffff'
 }
 
+
 def create_template():
     '''
         Adds a new layout template to pio's templates.
@@ -40,30 +41,25 @@ def create_template():
         the bar chart to those defined in
         the THEME dictionary.
     '''
-    custom_template = go.layout.Template(
-        layout=go.Layout(
-            font=dict(
-                family=THEME['font_family'],
-                color=THEME['font_color']
-            ),
-            paper_bgcolor=THEME['background_color'],
-            plot_bgcolor=THEME['background_color'],
-            hoverlabel=dict(
-                bgcolor=THEME['label_background_color'],
-                font_size=THEME['label_font_size'],
-                font_color=THEME['font_color']
-            ),
-            hovermode='closest'
-        ),
-        data=dict(
-            bar=[
-                go.Bar(
-                    marker=dict(
-                        color=THEME['bar_colors']
-                    )
-                )
-            ]
-        )
-    )
+    template = {
+        'layout': {
+            'font': {
+                'family': THEME['font_family'],
+                'color': THEME['font_color']
+            },
+            'plot_bgcolor': THEME['background_color'],
+            'paper_bgcolor': THEME['background_color'],
+            'hovermode': 'closest',
+            'hoverlabel': {
+                'bgcolor': THEME['label_background_color'],
+                'font': {
+                    'size': THEME['label_font_size'],
+                    'color': THEME['font_color']
+                }
+            },
+            'colorway': THEME['bar_colors'],
+        }
+    }
 
-    pio.templates['custom_theme'] = custom_template
+    pio.templates['custom_theme'] = template
+    pio.templates.default = 'custom_theme'

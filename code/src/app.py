@@ -75,9 +75,9 @@ def init_app_layout(figure):
     [State('line-chart', 'figure')]
 )
 def radio_updated(mode, figure):
-    new_fig = bar_chart.draw(figure, data, mode)
-    new_fig = bar_chart.update_y_axis(new_fig, mode)
     mode_text = mode.capitalize()
+    new_fig = bar_chart.draw(figure, data, mode)
+    app.layout = init_app_layout(new_fig)
     return new_fig, mode_text
 
 
@@ -86,5 +86,7 @@ data = prep_data()
 create_template()
 
 fig = bar_chart.init_figure()
+
+fig
 
 app.layout = init_app_layout(fig)

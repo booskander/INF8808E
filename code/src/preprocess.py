@@ -22,18 +22,18 @@ def summarize_lines(my_df: pd.DataFrame):
             The modified pandas dataframe containing the
             information described above.
     '''
-    act_total_lines = my_df.groupby('Act')['Line'].transform('sum')
 
-    my_df['PlayerLine'] = my_df.groupby(['Act', 'Player'])[
-        'Line'].transform('sum')
+    players_occurrences = my_df.groupby(
+        ['Act', 'Player']).size().reset_index(name='PlayerLine')
 
-    my_df['PlayerPercent'] = (my_df['PlayerLine'] / act_total_lines) * 100
+    lines_per_act = my_df.groupby('Act').size().reset_index(name='TotalLines')
 
-    my_df = my_df.drop_duplicates(subset=['Act', 'Player'])
+    merged_df = pd.merge(players_occurrences, lines_per_act, on='Act')
 
-    my_df = my_df.drop(columns=['Scene', 'Line'])
+    merged_df['PlayerPercent'] = (
+        merged_df['PlayerLine'] / merged_df['TotalLines']) * 100
 
-    return my_df
+    return merged_df
 
 
 def replace_others(my_df: pd.DataFrame):
@@ -60,23 +60,23 @@ def replace_others(my_df: pd.DataFrame):
             5 for the play grouped as 'OTHER'
     '''
 
-    sorted_df = my_df.sort_values(
-        ['Act', 'PlayerLine'], ascending=[True, False])
+    player_lines = my_df.groupby('Player')['PlayerLine'].sum()
 
-    five_firsts = sorted_df.groupby('Act').head(5)
+    top_players = player_lines.sort_values(ascending=False).head(5)
 
-    others = sorted_df.groupby('Act').apply(
-        lambda x: x.iloc[5:]).reset_index(drop=True)
+    top_players_data = my_df[my_df['Player'].isin(top_players.index)]
 
-    sum1 = others.groupby('Act')['PlayerPercent'].sum()
-    sum2 = others.groupby('Act')['PlayerLine'].sum()
+    other_players_data = my_df[~my_df.index.isin(top_players_data.index)]
 
-    new_df = pd.DataFrame(
-        {'Act': sum1.index, 'Player': 'OTHER', 'PlayerPercent': sum1.values, 'PlayerLine': sum2.values})
+    aggregated_other_players = other_players_data.groupby('Act').agg({
+        'PlayerLine': 'sum',
+        'PlayerPercent': 'sum'
+    }).reset_index()
 
-    my_df = pd.concat([five_firsts, new_df])
+    aggregated_other_players['Player'] = 'OTHER'
 
-    my_df = my_df.sort_values(by=['Act', 'PlayerLine']).reset_index(drop=True)
+    my_df = pd.concat(
+        [top_players_data, aggregated_other_players], ignore_index=True)
 
     return my_df
 

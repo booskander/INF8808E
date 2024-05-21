@@ -40,7 +40,7 @@ def init_figure():
     return fig
 
 
-def draw(fig: go.Figure, data: pd.DataFrame, mode: str):
+def draw(fig, data: pd.DataFrame, mode: str):
     '''
         Draws the bar chart.
 
@@ -51,27 +51,34 @@ def draw(fig: go.Figure, data: pd.DataFrame, mode: str):
         Returns:
             fig: The figure comprising the drawn bar chart
     '''
+
+    fig = init_figure()
     y_col = []
     # TODO : Update the figure's data according to the selected mode
 
     if mode.lower() == 'count':
-        y_col = data['PlayerLine']
+        y_col = 'PlayerLine'
     else:
-        y_col = data['PlayerPercent']
+        y_col = 'PlayerPercent'
 
     players = set(data['Player'])
 
+    i = 0
     for player in players:
         player_data = data[data['Player'] == player]
+
         fig.add_trace(
             go.Bar(
                 x=player_data['Act'],
                 y=player_data[y_col],
                 name=player,
+                hovertemplate=get_hover_template(player, mode)
             )
         )
 
     fig.update_layout(barmode='stack')
+
+    update_y_axis(fig, mode)
 
     return fig
 
