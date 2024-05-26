@@ -4,7 +4,7 @@
 import pandas as pd
 
 
-def convert_dates(dataframe):
+def convert_dates(dataframe: pd.DataFrame):
     '''
         Converts the dates in the dataframe to datetime objects.
 
@@ -14,10 +14,11 @@ def convert_dates(dataframe):
             The processed dataframe with datetime-formatted dates.
     '''
     # TODO : Convert dates
+    dataframe['Date_Plantation'] = pd.to_datetime(dataframe['Date_Plantation'])
     return dataframe
 
 
-def filter_years(dataframe, start, end):
+def filter_years(dataframe: pd.DataFrame, start, end):
     '''
         Filters the elements of the dataframe by date, making sure
         they fall in the desired range.
@@ -29,11 +30,13 @@ def filter_years(dataframe, start, end):
         Returns:
             The dataframe filtered by date.
     '''
+    dataframe = dataframe[(dataframe['Date_Plantation'].dt.year >= start) & (
+        dataframe['Date_Plantation'].dt.year <= end)]
     # TODO : Filter by dates
     return dataframe
 
 
-def summarize_yearly_counts(dataframe):
+def summarize_yearly_counts(dataframe: pd.DataFrame):
     '''
         Groups the data by neighborhood and year,
         summing the number of trees planted in each neighborhood
@@ -47,10 +50,10 @@ def summarize_yearly_counts(dataframe):
             trees for each neighborhood each year.
     '''
     # TODO : Summarize df
-    return None
+    return dataframe.groupby(['Arrond_Nom', dataframe['Date_Plantation'].dt.year]).size().reset_index(name='Counts')
 
 
-def restructure_df(yearly_df):
+def restructure_df(yearly_df: pd.DataFrame):
     '''
         Restructures the dataframe into a format easier
         to be displayed as a heatmap.
@@ -69,10 +72,10 @@ def restructure_df(yearly_df):
             The restructured dataframe
     '''
     # TODO : Restructure df and fill empty cells with 0
-    return None
+    return yearly_df.pivot(index='Arrond_Nom', columns='Date_Plantation', values='Counts').fillna(0)
 
 
-def get_daily_info(dataframe, arrond, year):
+def get_daily_info(dataframe: pd.DataFrame, arrond, year):
     '''
         From the given dataframe, gets
         the daily amount of planted trees
@@ -87,4 +90,5 @@ def get_daily_info(dataframe, arrond, year):
             neighborhood and year.
     '''
     # TODO : Get daily tree count data and return
-    return None
+
+    return dataframe[(dataframe['Arrond'] == arrond) & (dataframe['Date_Plantation'].dt.year == year)].groupby('Date_Plantation').size()
