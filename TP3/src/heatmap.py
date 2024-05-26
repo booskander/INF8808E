@@ -3,9 +3,12 @@
 '''
 import plotly.express as px
 import hover_template
+import pandas as pd
+
+import plotly.io as pio
 
 
-def get_figure(data):
+def get_figure(data: pd.DataFrame):
     '''
         Generates the heatmap from the given dataset.
 
@@ -21,5 +24,13 @@ def get_figure(data):
 
     # TODO : Create the heatmap. Make sure to set dragmode=False in
     # the layout. Also don't forget to include the hover template.
+    fig = px.imshow(data, template=pio.templates['default'])
+    fig.update_layout(
+        xaxis_title="Year",
+        yaxis_title="Neighborhood",
+        coloraxis_colorbar=dict(
+            title="Trees"
+        ),
+    )
 
-    return None
+    return fig

@@ -54,18 +54,18 @@ app.layout = html.Div(className='content', children=[
                 displayModeBar=False
             )
         ),
-        dcc.Graph(
-            id='line-chart',
-            className='graph',
-            figure=line_chart.get_empty_figure(),
-            config=dict(
-                scrollZoom=False,
-                showTips=False,
-                showAxisDragHandles=False,
-                doubleClick=False,
-                displayModeBar=False
-            )
-        )
+        # dcc.Graph(
+        #     id='line-chart',
+        #     className='graph',
+        #     figure=line_chart.get_empty_figure(),
+        #     config=dict(
+        #         scrollZoom=False,
+        #         showTips=False,
+        #         showAxisDragHandles=False,
+        #         doubleClick=False,
+        #         displayModeBar=False
+        #     )
+        # )
     ])
 ])
 

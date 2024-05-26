@@ -18,7 +18,6 @@ THEME = {
 }
 
 
-
 def create_custom_theme():
     '''
         Adds a new layout template to pio's templates.
@@ -48,6 +47,27 @@ def create_custom_theme():
         degrees to the right.
     '''
     # TODO : Generate template described above
+    template = go.layout.Template()
+    template.layout = go.Layout(
+        font=dict(
+            family=THEME['font_family'],
+            color=THEME['dark_color']
+        ),
+        paper_bgcolor=THEME['background_color'],
+        plot_bgcolor=THEME['background_color'],
+        hoverlabel=dict(
+            font=dict(
+                family=THEME['font_family'],
+                color=THEME['dark_color'],
+                size=THEME['label_font_size']
+            ),
+            bgcolor=THEME['label_background_color']
+        ),
+        xaxis=dict(
+            tickangle=45
+        )
+    )
+    pio.templates['custom_theme'] = template
 
 
 def set_default_theme():
@@ -56,3 +76,8 @@ def set_default_theme():
         'plotly_white' theme and our custom theme.
     '''
     # TODO : Set default theme
+    combined_template = pio.templates['plotly_white'].to_plotly_json()
+    combined_template['layout'].update(pio.templates['custom_theme']['layout'])
+
+    pio.templates['custom_theme'] = combined_template
+    pio.templates.default = 'custom_theme'
