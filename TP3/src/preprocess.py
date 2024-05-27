@@ -90,5 +90,10 @@ def get_daily_info(dataframe: pd.DataFrame, arrond, year):
             neighborhood and year.
     '''
     # TODO : Get daily tree count data and return
+    
 
-    return dataframe[(dataframe['Arrond'] == arrond) & (dataframe['Date_Plantation'].dt.year == year)].groupby('Date_Plantation').size()
+    filtered_data = dataframe[(dataframe['Arrond'] == arrond) & (dataframe['Date_Plantation'].dt.year == year)]
+
+    daily_tree_count = filtered_data.groupby(filtered_data['Date_Plantation'].dt.date).size().reset_index(name='Trees')
+
+    return daily_tree_count

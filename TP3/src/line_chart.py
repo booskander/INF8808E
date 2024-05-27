@@ -99,8 +99,8 @@ def get_figure(line_data, arrond, year):
     # TODO : Construct the required figure. Don't forget to include the hover template
     fig = px.line(
         line_data,
-        x='Date', y='Trees',
-        labels={'Date': 'Date', 'Trees': 'Trees'},
+        x='Date_Plantation', y='Trees',
+        labels={'Date_Plantation': 'Date_Plantation', 'Trees': 'Trees'},
         title=f'Trees planted in {arrond} in {year}',
         template='custom_theme'
     )
